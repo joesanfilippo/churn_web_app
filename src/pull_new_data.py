@@ -8,9 +8,8 @@ def pull_data(city_ids, lookback_days):
 
     ssm = boto3.client('ssm', region_name='us-east-2')
 
-    api_key = ssm.get_parameter(Name='REDASH_API_KEY', WithDecryption=True)
-    print(api_key)
-    query_url = ssm.get_parameter(Name='REDASH_LINK', WithDecryption=True)
+    api_key = ssm.get_parameter(Name='REDASH_API_KEY', WithDecryption=True)['Value']
+    query_url = ssm.get_parameter(Name='REDASH_LINK', WithDecryption=True)['Value']
 
     dynamic_churn_query_id = 744861
     dynamic_churn_data = Query_results(query_url, dynamic_churn_query_id, api_key, params)
