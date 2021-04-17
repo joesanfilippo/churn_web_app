@@ -11,11 +11,11 @@ def pull_data(city_ids, lookback_days):
     api_key = ssm.get_parameter(Name='REDASH_API_KEY', WithDecryption=True)
     query_url = ssm.get_parameter(Name='REDASH_LINK', WithDecryption=True)
 
-    print(api_key)
-    print(query_url)
+    print(api_key['Parameter']['Value'])
+    print(query_url['Parameter']['Value'])
 
     dynamic_churn_query_id = 744861
-    dynamic_churn_data = Query_results(query_url, dynamic_churn_query_id, api_key, params)
+    dynamic_churn_data = Query_results(query_url['Parameter']['Value'], dynamic_churn_query_id, api_key['Parameter']['Value'], params)
     
     clean_dict = {'datetime_cols': ['signup_time_utc', 'last_order_time_utc']
                 ,'target_column': 'last_order_time_utc'
