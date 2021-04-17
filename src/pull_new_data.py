@@ -6,7 +6,7 @@ def pull_data(city_ids, lookback_days):
     params = {'city_ids': city_ids
              ,'lookback_days': lookback_days}
 
-    ssm = boto3.client('ssm')
+    ssm = boto3.client('ssm', region_name='us-east-2')
 
     api_key = ssm.get_parameter(Name='REDASH_API_KEY', WithDecryption=True)
     print(api_key)
