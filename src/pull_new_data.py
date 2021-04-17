@@ -1,4 +1,4 @@
-import os
+import boto3
 from src.clean_data import Query_results
 
 def pull_data(city_ids, lookback_days):
