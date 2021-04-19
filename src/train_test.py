@@ -76,6 +76,7 @@ class Churn_Model(object):
         print(f"Best {scoring_type} Training Score for {self.classifier_name}: {self.model_search.best_score_:.4f}")
 
         self.best_model = self.model_search.best_estimator_
+        self.best_params = self.model_search.best_params_
         self.y_train_probs = self.best_model.predict_proba(self.X_train)[:,1] 
         self.y_test_probs = self.best_model.predict_proba(self.X_test)[:,1] 
 
@@ -105,8 +106,8 @@ def load_X_y(train_data, test_data, is_feature_selection=False, feature_list=[])
 
     return X_train, X_test, y_train, y_test
 
-if __name__ == '__main__':
-    
+def retrain_model():
+
     print('Pulling new data...')
     X, churn_data, target = pull_data(is_remote=False)
     churn_train, churn_test = train_test_split(pd.concat([churn_data, target], axis=1)
@@ -135,3 +136,13 @@ if __name__ == '__main__':
         pickle.dump(best_model, f)
 
     print('Done.')
+
+    name = gb_model.classifier
+    hyper_params = gb_model.best_params
+    score = roc_auc_score(split_data[3], gb_model.y_test_probs)
+
+    return name, hyper_params, score
+
+if __name__ == '__main__':
+    
+    print('Nothing to see here!')

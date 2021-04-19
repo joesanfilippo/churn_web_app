@@ -2,6 +2,7 @@ from flask import Flask, request, render_template
 import pickle
 import numpy as np
 import pandas as pd
+from train_test import retrain_model
 import psycopg2 as pg2
 
 app = Flask(__name__)
@@ -41,6 +42,15 @@ def predict():
     churn_predictions = [round(result[1]*100) for result in results]
 
     return render_template('predictions.html', data=zip(users, churn_predictions))
+
+@app.route('/retrain')
+def retrain():
+    return render_template('retrain.html')
+
+@app.route('/retrain_model')
+def retrain_churn_model():
+    name, hyper_params, score = retrain_model()
+    return render_template('retrain_model.html', name=name, params=hyper_params, score=round(score, 3))
 
 if __name__ == '__main__':
     print('Connecting to Database...')

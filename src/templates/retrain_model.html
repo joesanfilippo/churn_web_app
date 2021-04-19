@@ -6,13 +6,27 @@
     <meta name="description" content="">
     <meta name="author" content="">
     
-    <title>Churn Predictions Homepage</title>
+    <title>Retrain Model</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="static/css/cover.css" rel="stylesheet">
+    <style>
+        table {
+            border: 3px solid rgb(197, 194, 194);
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 15px;
+        }
+        table.center {
+            width: 50%;
+            margin-left:auto; 
+            margin-right:auto;
+        }
+    </style>
   </head>
 
   <body class="text-center">
@@ -30,12 +44,26 @@
       </header>
 
       <main role="main" class="inner cover">
-        <h1 class="cover-heading">Predicting User Churn</h1>
-        <p class="lead">Ever wonder which users in which cities are going to churn? </p> 
-        <p class="lead">Now you can use this webpage to see who those users are and what their likelihood of churning will be.</p>
-        <p class="lead">
-          <a href="{{ url_for('inputs') }}" class="btn btn-lg btn-secondary">Get Started</a>
-        </p>
+        <h1 class="cover-heading">Retrained Model</h1>
+        <p class="lead"><b>Classifier Name:</b> {{ name }}</p>
+        <p class="lead"><b>ROC AUC Score:</b> {{ score }}</p>
+        <p class="lead"><b>Optimal Parameters</b></p>
+        <table class="center">
+            <thead>
+                <th>Hyper Parameter</th>
+                <th>Value</th>
+              </thead>
+              <tbody>
+                <!-- Here is where the data passed into the template gets inserted -->
+                {% for key, value in params.items() %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                {% endfor %}
+          </tbody>
+        </table>
+
       </main>
 
       <footer class="mastfoot mt-auto">

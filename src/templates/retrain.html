@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     
-    <title>Churn Predictions Homepage</title>
+    <title>Retrain Model</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.min.css" rel="stylesheet">
@@ -30,11 +30,9 @@
       </header>
 
       <main role="main" class="inner cover">
-        <h1 class="cover-heading">Predicting User Churn</h1>
-        <p class="lead">Ever wonder which users in which cities are going to churn? </p> 
-        <p class="lead">Now you can use this webpage to see who those users are and what their likelihood of churning will be.</p>
+        <h1 class="cover-heading">Retrain Model</h1>
         <p class="lead">
-          <a href="{{ url_for('inputs') }}" class="btn btn-lg btn-secondary">Get Started</a>
+          <a href="{{ url_for('retrain_churn_model') }}" class="btn btn-lg btn-secondary">Retrain Model</a>
         </p>
       </main>
 
