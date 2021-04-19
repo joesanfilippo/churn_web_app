@@ -15,16 +15,7 @@ def index():
 
 @app.route('/inputs')
 def inputs():
-    return '''
-        <form action="/predict" method='POST'>
-            <input type="text" name="city_ids"/>
-            
-            <input type="text" name="lookback_days"/>
-
-            <input type="text" name="threshold"/>
-            <input type='submit' value="Predict Churn">
-        </form>
-    '''
+    return render_template('inputs.html')
 
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():

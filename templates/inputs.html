@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     
-    <title>Churn Predictions Homepage</title>
+    <title>Churn Predictions Inputs</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.min.css" rel="stylesheet">
@@ -22,20 +22,32 @@
         <div class="inner">
           <h3 class="masthead-brand">Food Delivery Company</h3>
           <nav class="nav nav-masthead justify-content-center">
-            <a class="nav-link active" href="{{ url_for('index') }}">Home</a>
-            <a class="nav-link" href="{{ url_for('inputs') }}">Input Parameters</a>
+            <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+            <a class="nav-link active" href="{{ url_for('inputs') }}">Input Parameters</a>
             <a class="nav-link" href="{{ url_for('predict') }}">Predictions</a>
           </nav>
         </div>
       </header>
 
       <main role="main" class="inner cover">
-        <h1 class="cover-heading">Predicting User Churn</h1>
-        <p class="lead">Ever wonder which users in which cities are going to churn? Now you can use this webpage to 
-          see who those users are and what their likelihood of churning will be.</p>
-        <p class="lead">
-          <a href="{{ url_for('inputs') }}" class="btn btn-lg btn-secondary">Get Started</a>
-        </p>
+        <form action="/predict" method='POST'>
+            <h1 class="cover-heading">Enter Values for Predictions</h1>
+            <p class="lead">City IDs (Separate multiple cities by ','):</p>
+            <p class="lead">
+                <input type="text" class="btn btn-ip btn-input" value="City IDs" onfocus="if (this.value=='City IDs') this.value='';" name="city_ids"/>
+            </p>
+            <p class="lead">Only include users who have signed up this many of days ago:</p>
+            <p class="lead">
+                <input type="text"  class="btn btn-ip btn-input" value="Lookback Days" onfocus="if (this.value=='Lookback Days') this.value='';" name="lookback_days"/>
+            </p>
+            <p class="lead">What is the minimum probability of churn to return:</p>
+            <p class="lead">
+                <input type="text"  class="btn btn-ip btn-input" value="Churn Threshold" onfocus="if (this.value=='Churn Threshold') this.value='';" name="threshold"/>
+            </p>
+            <p class="lead">
+                <input type="submit" class="btn btn-lg btn-secondary" value="Predict Churn"/>
+            </p>
+        </form>
       </main>
 
       <footer class="mastfoot mt-auto">
