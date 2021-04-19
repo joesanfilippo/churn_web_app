@@ -1,15 +1,9 @@
-import io
-import os
-import boto3
 import pickle
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt 
-plt.style.use('ggplot')
-font = {'weight': 'bold'
-       ,'size': 16}
-plt.rc('font', **font)
+from pull_new_data import pull_data
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.metrics import confusion_matrix, roc_auc_score, roc_curve
@@ -85,7 +79,7 @@ class Churn_Model(object):
         self.y_train_probs = self.best_model.predict_proba(self.X_train)[:,1] 
         self.y_test_probs = self.best_model.predict_proba(self.X_test)[:,1] 
 
-def load_X_y(bucket_name, filename, is_feature_selection=False, feature_list=[]):
+def load_X_y(train_data, test_data, is_feature_selection=False, feature_list=[]):
     """ Loads the X & y training & test data from AWS Bucket
     Args: 
         bucket_name (str): The AWS S3 bucket to pull the training and test data from.
@@ -99,25 +93,12 @@ def load_X_y(bucket_name, filename, is_feature_selection=False, feature_list=[])
         y_train (Pandas Series): Target values for training dataset
         y_test (Pandas Series): Target values for test dataset
     """
-    aws_id = os.environ['AWS_ACCESS_KEY_ID']
-    aws_secret = os.environ['AWS_SECRET_ACCESS_KEY']
-    client = boto3.client('s3'
-                          ,aws_access_key_id=aws_id
-                          ,aws_secret_access_key=aws_secret)
-
-    train_obj = client.get_object(Bucket=bucket_name, Key=f"{filename}_train.csv")
-    test_obj = client.get_object(Bucket=bucket_name, Key=f"{filename}_test.csv")
-
-    X_train = pd.read_csv(io.BytesIO(train_obj['Body'].read()), encoding='utf8')
-    X_train = X_train.drop(['user_id', 'signup_time_utc', 'last_order_time_utc'], axis=1)
-    
+    X_train = train_data.drop(['user_id', 'city_id', 'signup_time_utc', 'last_order_time_utc'], axis=1)
     if is_feature_selection:
         X_train = X_train[feature_list]
     y_train = X_train.pop('churned_user')
 
-    X_test = pd.read_csv(io.BytesIO(test_obj['Body'].read()), encoding='utf8')
-    X_test = X_test.drop(['user_id', 'signup_time_utc', 'last_order_time_utc'], axis=1)
-    
+    X_test = test_data.drop(['user_id', 'city_id', 'signup_time_utc', 'last_order_time_utc'], axis=1)
     if is_feature_selection:
         X_test = X_test[feature_list]
     y_test = X_test.pop('churned_user')
@@ -126,13 +107,16 @@ def load_X_y(bucket_name, filename, is_feature_selection=False, feature_list=[])
 
 if __name__ == '__main__':
     
-    bucket_name = 'food-delivery-churn'
-    filename = 'original_churn'
-    is_feature_selection = False
-    feature_list = []
-        
-    split_data = load_X_y(bucket_name, filename, is_feature_selection, feature_list)
+    print('Pulling new data...')
+    X, churn_data, target = pull_data(is_remote=False)
+    churn_train, churn_test = train_test_split(pd.concat([churn_data, target], axis=1)
+                                              ,test_size=0.2
+                                              ,shuffle=True
+                                              ,stratify=target)
 
+    split_data = load_X_y(churn_train, churn_test)
+    
+    print('Retraining model...')
     gb_model = Churn_Model(GradientBoostingClassifier(), split_data)
     gradient_boosting_grid = {'learning_rate': [0.01, 0.05, 0.1, 0.2, 0.25]
                             ,'max_depth': [2, 4, 8]
@@ -144,7 +128,10 @@ if __name__ == '__main__':
     gb_model.fit_model(gradient_boosting_grid, RandomizedSearchCV, 'roc_auc')
     
     print(f"ROC AUC Score on Unseen Data: {roc_auc_score(split_data[3], gb_model.y_test_probs):.3f}")
-
+    
+    print('Storing best model...')
     best_model = gb_model.best_model
     with open('data/best_model.pkl', 'wb') as f:
         pickle.dump(best_model, f)
+
+    print('Done.')

@@ -1,7 +1,9 @@
 import os
 import boto3
 import pickle
-from src.clean_data import Query_results
+import psycopg2 as pg2
+import psycopg2.extras as extras
+from clean_data import Query_results
 from sklearn.preprocessing import StandardScaler
 
 def convert_cat_to_int(df):
@@ -21,12 +23,7 @@ def convert_cat_to_int(df):
 
     return df 
 
-def pull_data(city_ids, lookback_days):
-
-    is_remote = False
-
-    params = {'city_ids': city_ids
-             ,'lookback_days': lookback_days}
+def pull_data(is_remote=False):
 
     if is_remote: 
         ssm = boto3.client('ssm', region_name='us-east-2')
@@ -40,21 +37,55 @@ def pull_data(city_ids, lookback_days):
                 ,'target_column': 'last_order_time_utc'
                 ,'days_to_churn': 30
                 }
-
-    dynamic_churn_query_id = 744861
-    dynamic_churn_data = Query_results(query_url, dynamic_churn_query_id, api_key, params)
-    dynamic_churn_data.clean_data(clean_dict)
     
-    user_ids = dynamic_churn_data.df.pop('user_id')
-    dynamic_churn_data.df.drop(['signup_time_utc', 'last_order_time_utc'], axis=1, inplace=True)
-    X = convert_cat_to_int(dynamic_churn_data.df)
+    churn_query_id = 714507
+    churn_data = Query_results(query_url, churn_query_id, api_key, params={})
+    churn_data.clean_data(clean_dict)
+    
+    X = churn_data.df.drop(['user_id', 'city_id', 'signup_time_utc', 'last_order_time_utc'], axis=1)
+    X = convert_cat_to_int(X)
 
-    return X, user_ids
+    return X, churn_data.df, churn_data.target
+
+def execute_batch(conn, df, table, page_size=100):
+    # Code example adapted from: 
+    # https://naysan.ca/2020/05/09/pandas-to-postgresql-using-psycopg2-bulk-insert-performance-benchmark/
+    
+    tuples = [tuple(x) for x in df.to_numpy()]
+    cols = ','.join(list(df.columns))
+    query  = """INSERT INTO %s(%s) VALUES(%%s,%%s,%%s,%%s,%%s,%%s,%%s,%%s,%%s,%%s
+                                         ,%%s,%%s,%%s,%%s,%%s,%%s,%%s,%%s,%%s,%%s
+                                         ,%%s,%%s,%%s,%%s,%%s)""" % (table, cols)
+    cursor = conn.cursor()
+    try:
+        extras.execute_batch(cursor, query, tuples, page_size)
+        conn.commit()
+    except (Exception, pg2.DatabaseError) as error:
+        print("Error: %s" % error)
+        conn.rollback()
+        cursor.close()
+        return 1
+    cursor.close()
 
 if __name__ == '__main__':
 
+    print('Connecting to Database...')
+    conn = pg2.connect(dbname='churn_database', user='postgres', password='galvanize', host='localhost', port='5432')
+
+    print('Loading model...')
     with open('data/best_model.pkl', 'rb') as f:
         model = pickle.load(f)
 
-    X = pull_data('1', '90')
-    print(model.predict(X['user_id']))
+    print('Pulling new data...')
+    X, X_df, y = pull_data(is_remote=False)
+    X_df['churn_prediction'] = model.predict_proba(X)[:,1]
+    
+    print('Deleting all rows...')
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM churn_predictions")
+    conn.commit()
+
+    print('Updating table with new predictions...')
+    execute_batch(conn, X_df, 'churn_predictions')
+
+    print('Done.')

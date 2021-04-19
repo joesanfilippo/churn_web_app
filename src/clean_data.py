@@ -1,9 +1,9 @@
 import pandas as pd 
-import src.query_pull as query_pull
+import query_pull as query_pull
 
 class Query_results(object):
 
-    def __init__(self, query_url, query_id, api_key, params):
+    def __init__(self, query_url, query_id, api_key, params={}):
         """ Initialize an instance of the Query_results class that will be used to analyze user churn.
 
         Args:
