@@ -75,6 +75,7 @@ if __name__ == '__main__':
 
     print('Connecting to Database...')
     if is_remote:
+        ssm = boto3.client('ssm', region_name='us-east-2')
         postgres_pw = ssm.get_parameter(Name='POSTGRES_PASSWORD', WithDecryption=True)['Parameter']['Value']
     else:
         postgres_pw = os.environ['POSTGRES_PASSWORD']
