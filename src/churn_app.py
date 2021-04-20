@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template
+import boto3
 import pickle
 import numpy as np
 import pandas as pd
