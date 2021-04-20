@@ -1,4 +1,4 @@
-#!/opt/anaconda3/bin/python3
+#!/opt/conda/bin/python
 
 import os
 import boto3

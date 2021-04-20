@@ -82,6 +82,7 @@ if __name__ == '__main__':
     else:
         api_key = os.environ['REDASH_API_KEY']
         query_url = os.environ['REDASH_LINK']
+        db_password = os.environ['POSTGRES_PASSWORD']
 
     conn = pg2.connect(dbname='churn_database'
                       ,user='postgres'
