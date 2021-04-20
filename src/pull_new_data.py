@@ -1,5 +1,5 @@
 import os
-import boto3
+import bopto3
 import pickle
 import psycopg2 as pg2
 import psycopg2.extras as extras
@@ -77,7 +77,7 @@ if __name__ == '__main__':
         model = pickle.load(f)
 
     print('Pulling new data...')
-    X, X_df, y = pull_data(is_remote=False)
+    X, X_df, y = pull_data(is_remote=True)
     X_df['churn_prediction'] = model.predict_proba(X)[:,1]
     
     print('Deleting all rows...')

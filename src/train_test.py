@@ -109,7 +109,7 @@ def load_X_y(train_data, test_data, is_feature_selection=False, feature_list=[])
 def retrain_model():
 
     print('Pulling new data...')
-    X, churn_data, target = pull_data(is_remote=False)
+    X, churn_data, target = pull_data(is_remote=True)
     churn_train, churn_test = train_test_split(pd.concat([churn_data, target], axis=1)
                                               ,test_size=0.2
                                               ,shuffle=True
