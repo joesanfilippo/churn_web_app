@@ -22,7 +22,7 @@
             padding: 5px;
         }
         table.center {
-            width: 25%;
+            width: 50%;
             margin-left:auto; 
             margin-right:auto;
         }
@@ -48,6 +48,9 @@
         <table class="center">
             <thead>
                 <th>User ID</th>
+                <th>City Name</th>
+                <th>Days Since Signup</th>
+                <th>First 30 Day Orders</th>
                 <th>Probability of Churn</th>
               </thead>
               <tbody>
@@ -55,7 +58,10 @@
                 {% for row in data %}
                     <tr>
                         <td>{{ row[0] }}</td>
-                        <td>{{ row[1] }}%</td>
+                        <td>{{ row[1] }}</td>
+                        <td>{{ row[2] }}</td>
+                        <td>{{ row[3] }}</td>
+                        <td>{{ row[4] }}%</td>
                     </tr>
                 {% endfor %}
           </tbody>

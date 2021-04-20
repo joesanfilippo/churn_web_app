@@ -1,3 +1,5 @@
+#!/opt/anaconda3/bin/python3
+
 import os
 import boto3
 import pickle
@@ -69,8 +71,13 @@ def execute_batch(conn, df, table, page_size=100):
 
 if __name__ == '__main__':
 
+    is_remote=True
+
     print('Connecting to Database...')
-    postgres_pw = ssm.get_parameter(Name='POSTGRES_PASSWORD', WithDecryption=True)['Parameter']['Value']
+    if is_remote:
+        postgres_pw = ssm.get_parameter(Name='POSTGRES_PASSWORD', WithDecryption=True)['Parameter']['Value']
+    else:
+        postgres_pw = os.environ['POSTGRES_PASSWORD']
     conn = pg2.connect(dbname='churn_database', user='postgres', password=postgres_pw, host='localhost', port='5432')
 
     print('Loading model...')
@@ -78,7 +85,7 @@ if __name__ == '__main__':
         model = pickle.load(f)
 
     print('Pulling new data...')
-    X, X_df, y = pull_data(is_remote=True)
+    X, X_df, y = pull_data(is_remote)
     X_df['churn_prediction'] = model.predict_proba(X)[:,1]
     
     print('Deleting all rows...')
@@ -90,3 +97,4 @@ if __name__ == '__main__':
     execute_batch(conn, X_df, 'churn_predictions')
 
     print('Done.')
+
