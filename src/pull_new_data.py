@@ -1,5 +1,5 @@
 import os
-import bopto3
+import boto3
 import pickle
 import psycopg2 as pg2
 import psycopg2.extras as extras
