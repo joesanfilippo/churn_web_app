@@ -70,7 +70,7 @@ def execute_batch(conn, df, table, page_size=100):
 if __name__ == '__main__':
 
     print('Connecting to Database...')
-    postgres_pw = ssm.get_parameter(Name='REDASH_API_KEY', WithDecryption=True)['Parameter']['Value']
+    postgres_pw = ssm.get_parameter(Name='POSTGRES_PASSWORD', WithDecryption=True)['Parameter']['Value']
     conn = pg2.connect(dbname='churn_database', user='postgres', password=postgres_pw, host='localhost', port='5432')
 
     print('Loading model...')
