@@ -37,7 +37,6 @@ My Flask web-app has 3 main pages and 3 additional "behind-the-scenes" routes th
 
 * **Retrained Model Page**: This page displays the name of the classifier used, the ROC AUC Score from a holdout dataset, and the hyperparameters that were used in the best model.
 
-
 ### PostgreSQL
 
 I wanted to maintain some flexibility on what was ultimately returned to the user from the Predictions page, so while setting up the `churn_predictions` table on my database I included all the features from the original dataset in addition to `city_id` which I will filter on. 
@@ -74,3 +73,10 @@ I wanted to maintain some flexibility on what was ultimately returned to the use
 
 ### AWS
 
+Once I had thoroughly tested my web-application on a local machine, it was time to host it on a remote EC2 instance. This was a fairly simple process but there were several steps along the way to making sure it worked:
+
+1. **Storing private keys**: On a local machine, you can easily reference any keys in your environmet through the `.bash_profile` or `.zshrc file`. When you are running on a remote machine you no longer have that option, so I needed to store those secret keys in AWS's Systems Manager and then call them using Boto3.
+
+2. **Connecting to Postgres Database**: Once I had installed Docker on the EC2 instance, I could start the container. Before that though, I needed to make sure to specify Port: 5432 for TCP/IP connections on the EC2 instance. Once I had done both of those, I had no problem creating a connection to my Postgres database.
+
+3. **Pulling Github Repo**: This is a very simple way to transfer your code from the local machine to a remote machine. Downloading Github and cloning your repo on the EC2 instance will make sure you have all the up-to-date files needed to run.
