@@ -3,20 +3,20 @@
 ## Background
 For the original background, dataset, and model creation for this project, please see my Github repo [Predicting User Churn](https://github.com/joesanfilippo/food_delivery_churn).
 
-Now that I have a model which can predict the probability of a user churning during their first 30 days, I need a way for other teams to interact with it. Whether that is the marketing team targeting users with a high probability or the business intelligence team seeing if the distribution of users is changing over time, having a simple user interface to interact with my model will be crucial.
+Now that I have a model which can predict the probability of a user churning during their first 30 days, I need a way for other teams to interact with it. Whether that is the marketing team targeting users with a high probability or the business intelligence team seeing if the distribution of users is changing over time, having a simple user interface to interact with my model is crucial.
 
 ## Tech Stack
 I used several different types of technology to create my web application:
 
-* **Flask**: A web framework and Python module that lets you develop web applications easily. This is the core piece of my web app that will take my model and data stored in a Postgres database and spit out predictions for a user. A majority of what you see is written in HTML that Flask uses to display the web app, but behind the scenes Flask + Python is doing all the work.
+* **Flask**: A web framework and Python module that lets you develop web applications easily. This is the core piece of my web app that uses my model and data stored in a Postgres database and spits out predictions for a user. A majority of what you see is written in HTML that Flask uses to display the web app, but behind the scenes Flask + Python is doing all the work.
 
 * **PostgreSQL**: There are two areas I used PostgreSQL: 
-    1. The first is on Food Delivery Company X's database where I can pull udpated data directly from the source. This is where the user information directly lives that my model will need to make predictions. 
+    1. The first is on Food Delivery Company X's database where I can pull udpated data directly from the source. This is where the user information directly lives that my model uses to make predictions. 
     2. The second is a local Postgres database that I created in order to store the user data and my model's predictions. This significantly reduces the time a user has to wait to receive predictions since I am not first querying Company X's database and then running my model on that data. This also simulates a real world scenario where I would create a new table (`churn_predictions`) in a company's database that would update at a regular interval.
 
 * **AWS**: Amazon Web Services (AWS) offers an Elastic Computing (EC2) product that allows anyone to deploy secure, reliable, and scalable websites, apps, or processes. This is what allows me to take anything I do on my local computer and easily replicate it on a website.
 
-* **Docker**: In order to host my web app on AWS, I will need a simple way to create a Postgres database in my EC2 instance. Usually this would involve a host of difficult commands to run once I connect to my EC2 instance, but Docker makes it easy by using the [Postgres image](https://hub.docker.com/_/postgres). 
+* **Docker**: In order to host my web app on AWS, I needed a simple way to create a Postgres database in my EC2 instance. Usually this would involve a host of difficult commands to run once I connect to my EC2 instance, but Docker makes it easy by using the [Postgres image](https://hub.docker.com/_/postgres). 
 
 ### Flask
 
@@ -25,13 +25,13 @@ My Flask web-app has 3 main pages and 3 additional "behind-the-scenes" routes th
 * **Home Page**: This page welcomes the user and gives them a basic description about what it's purpose is as well as a prompt to begin.
 
 * **Inputs Page**: This page takes in 3 inputs and uses those inputs to query the Postgres database. 
-    1. City IDs: The city id number(s) separated by a `,`. This field is also optional and leaving it blank will return users for all cities.
+    1. City IDs: The city id number(s) separated by a `,`. This field is also optional and leaving it blank returns users for all cities.
     2. Lookback Days: The number of days since a user has signed up. The marketing team can use this number to target more recent signups that may not have churned yet but have a high likelihood of churning.
     3. Churn Threshold: This is the minimum probability of churn to filter users by. A number closer than 1 indicates a higher likelihood a user will churn while a number closer to 0 indicates a lower likelihood.
 
 * **Predictions Page**: This page displays the results from the SQL query using the inputs provided. There are five columns I used from my Postgres table: `user_id`, `city_name`, `days_since_signup`, `first_30_day_orders`, and `churn_prediction`.
 
-* **Download Page**: This is a behind-the-scenes page that will take the results from the Predictions Page and download it to the user's computer as a csv file.
+* **Download Page**: This is a behind-the-scenes page that takes the results from the Predictions Page and download it to the user's computer as a csv file.
 
 * **Retrain Page**: This is a hidden (non-hyperlinked) page that can be used to retrain the model on new data. There is only one button which routes to the Retrained Model page when it is complete.
 
@@ -39,7 +39,7 @@ My Flask web-app has 3 main pages and 3 additional "behind-the-scenes" routes th
 
 ### PostgreSQL
 
-I wanted to maintain some flexibility on what was ultimately returned to the user from the Predictions page, so while setting up the `churn_predictions` table on my database I included all the features from the original dataset in addition to `city_id` which I will filter on. 
+I wanted to maintain some flexibility on what was ultimately returned to the user from the Predictions page, so while setting up the `churn_predictions` table on my database I included all the features from the original dataset in addition to `city_id` which I use to filter on. 
 
 #### `churn_predictions` Schema
 
