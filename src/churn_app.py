@@ -1,10 +1,11 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, make_response
 import boto3
 import pickle
 import numpy as np
 import pandas as pd
 from train_test import retrain_model
 import psycopg2 as pg2
+import time 
 
 app = Flask(__name__)
 
@@ -21,8 +22,12 @@ def predict():
     cursor = conn.cursor()
     try:
         city_ids = str(request.form['city_ids'])
-        city_splits = city_ids.split(',')
-        city_tup = tuple([int(x) for x in city_splits])
+        if city_ids and city_ids != 'City IDs':
+            city_splits = city_ids.split(',')
+            city_tup = tuple([int(x) for x in city_splits])
+        else:
+            city_tup = tuple([int(x) for x in np.arange(1,100)])
+
         lookback_days = int(request.form['lookback_days'])
         threshold = float(request.form['threshold'])
         cursor.execute(
@@ -46,13 +51,20 @@ def predict():
         )
 
         results = cursor.fetchall()
+        results_df = pd.DataFrame(results, columns=['user_id'
+                                                   ,'city_name'
+                                                   ,'days_since_signup'
+                                                   ,'first_30_day_orders'
+                                                   ,'churn_prediction'])
+        
         users = [result[0] for result in results]
         cities = [result[1] for result in results]
         days = [result[2] for result in results]
         orders = [result[3] for result in results]
         churn_predictions = [round(result[4]*100, 1) for result in results]
         cursor.close()
-        return render_template('predictions.html', data=zip(users, cities, days, orders, churn_predictions))
+        return render_template('predictions.html', data=zip(users, cities, days, orders, churn_predictions)
+                              ,dataframe=results_df.to_csv(index=False))
     
     except (Exception, pg2.DatabaseError) as error:
         print("Error: %s" % error)
@@ -69,20 +81,24 @@ def retrain_churn_model():
     name, hyper_params, score = retrain_model()
     return render_template('retrain_model.html', name=name, params=hyper_params, score=round(score, 3))
 
-if __name__ == '__main__':
-    is_remote=True
+@app.route('/download', methods=['GET', 'POST'])
+def download():
+    timestamp = int(time.time())
+    filename = 'churn_prediction_results_{}.csv'.format(timestamp)
 
-    print('Connecting to Database...')
+    df_response = request.form['results_df']
+    resp = make_response(df_response)
+    resp.headers["Content-Disposition"] = "attachment; filename={}".format(filename)
+    resp.headers["Content-Type"] = "text/csv"
+    return resp
+
+if __name__ == '__main__':
     
-    if is_remote: 
-        ssm = boto3.client('ssm', region_name='us-east-2')
-        api_key = ssm.get_parameter(Name='REDASH_API_KEY', WithDecryption=True)['Parameter']['Value']
-        query_url = ssm.get_parameter(Name='REDASH_LINK', WithDecryption=True)['Parameter']['Value']
-        db_password = ssm.get_parameter(Name='POSTGRES_PASSWORD', WithDecryption=True)['Parameter']['Value']
-    else:
-        api_key = os.environ['REDASH_API_KEY']
-        query_url = os.environ['REDASH_LINK']
-        db_password = os.environ['POSTGRES_PASSWORD']
+    print('Connecting to Database...')
+    ssm = boto3.client('ssm', region_name='us-east-2')
+    api_key = ssm.get_parameter(Name='REDASH_API_KEY', WithDecryption=True)['Parameter']['Value']
+    query_url = ssm.get_parameter(Name='REDASH_LINK', WithDecryption=True)['Parameter']['Value']
+    db_password = ssm.get_parameter(Name='POSTGRES_PASSWORD', WithDecryption=True)['Parameter']['Value']
 
     conn = pg2.connect(dbname='churn_database'
                       ,user='postgres'

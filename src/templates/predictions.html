@@ -44,7 +44,15 @@
       </header>
 
       <main role="main" class="inner cover">
-        <h1 class="cover-heading">Churn Predictions</h1>
+        <h1 class="cover-heading">Churn Predictions {{ filename }}</h1>
+        <form action="/download" method='POST'>
+          <p class="lead">
+            <a href="{{ url_for('download') }}">
+              <input type="hidden" name='results_df' value='{{ dataframe }}'/>
+              <input type="submit" class="btn btn-lg btn-secondary" value="Download"/>
+            </a>
+          </p>
+        </form>
         <table class="center">
             <thead>
                 <th>User ID</th>
