@@ -5,7 +5,7 @@ CREATE TABLE churn_predictions (
     ,CITY_NAME                      VARCHAR(50)
     ,CITY_ID                        INT
     ,SIGNUP_TIME_UTC                DATE
-    ,ACQUISITION_CHANNEL             VARCHAR(50)
+    ,ACQUISITION_CHANNEL            VARCHAR(50)
     ,DAYS_SINCE_SIGNUP              INT
     ,LAST_ORDER_TIME_UTC            DATE
     ,SIGNUP_TO_ORDER_HOURS          DOUBLE PRECISION
