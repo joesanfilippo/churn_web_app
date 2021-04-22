@@ -32,15 +32,15 @@
       <main role="main" class="inner cover">
         <form action="/predict" method='POST'>
             <h1 class="cover-heading">Enter Values for Predictions</h1>
-            <p class="lead">City IDs (Separate multiple cities by ','):</p>
+            <p>City IDs (Separate multiple cities by ',')<br>Leave blank to include all cities</p>
             <p class="lead">
                 <input type="text" class="btn btn-ip btn-input" value="City IDs" onfocus="if (this.value=='City IDs') this.value='';" name="city_ids"/>
             </p>
-            <p class="lead">Only include users who have signed up this many of days ago:</p>
+            <p>Number of days since a user signed up (> 30 days):</p>
             <p class="lead">
                 <input type="text"  class="btn btn-ip btn-input" value="Lookback Days" onfocus="if (this.value=='Lookback Days') this.value='';" name="lookback_days"/>
             </p>
-            <p class="lead">What is the minimum probability of churn to return:</p>
+            <p>Minimum churn probability (0.0 - 1.0):</p>
             <p class="lead">
                 <input type="text"  class="btn btn-ip btn-input" value="Churn Threshold" onfocus="if (this.value=='Churn Threshold') this.value='';" name="threshold"/>
             </p>

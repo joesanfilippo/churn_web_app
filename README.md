@@ -80,3 +80,20 @@ Once I had thoroughly tested my web-application on a local machine, it was time 
 2. **Connecting to Postgres Database**: Once I had installed Docker on the EC2 instance, I could start the container. Before that though, I needed to make sure to specify Port: 5432 for TCP/IP connections on the EC2 instance. Once I had done both of those, I had no problem creating a connection to my Postgres database.
 
 3. **Pulling Github Repo**: This is a very simple way to transfer your code from the local machine to a remote machine. Downloading Github and cloning your repo on the EC2 instance will make sure you have all the up-to-date files needed to run.
+
+## Screenshots
+
+### Home Page
+![Home](images/home_page.png)
+
+### Inputs Page
+![Inputs](images/inputs_page.png)
+
+### Predictions Page
+![Predictions](images/predictions_page.png)
+
+### Retrain Page
+![Retrain](images/retrain_page.png)
+
+### Retrain Outputs Page
+![Retrain Outputs](images/retrained_model_page.png)

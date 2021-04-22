@@ -126,7 +126,7 @@ def retrain_model():
                             ,'subsample': [0.25, 0.5, 0.75, 1.0]
                             ,'n_estimators': [5,10,25,50,100,200]}
     gb_model.convert_cat_to_int()
-    gb_model.fit_model(gradient_boosting_grid, RandomizedSearchCV, 'roc_auc')
+    gb_model.fit_model(gradient_boosting_grid, GridSearchCV, 'roc_auc')
     
     print(f"ROC AUC Score on Unseen Data: {roc_auc_score(split_data[3], gb_model.y_test_probs):.3f}")
     
