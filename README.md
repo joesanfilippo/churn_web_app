@@ -1,4 +1,4 @@
-# Churn Web App
+# Predicting User Churn: Part II
 
 ## Background
 For the original background, dataset, and model creation for this project, please see my Github repo [Predicting User Churn](https://github.com/joesanfilippo/food_delivery_churn).
