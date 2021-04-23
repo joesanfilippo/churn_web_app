@@ -13,20 +13,6 @@
 
     <!-- Custom styles for this template -->
     <link href="static/css/cover.css" rel="stylesheet">
-    <style>
-        table {
-            border: 3px solid rgb(197, 194, 194);
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 15px;
-        }
-        table.center {
-            width: 50%;
-            margin-left:auto; 
-            margin-right:auto;
-        }
-    </style>
   </head>
 
   <body class="text-center">
@@ -38,34 +24,15 @@
           <nav class="nav nav-masthead justify-content-center">
             <a class="nav-link" href="{{ url_for('index') }}">Home</a>
             <a class="nav-link" href="{{ url_for('inputs') }}">Inputs</a>
-            <a class="nav-link" href="{{ url_for('inputs') }}">Predictions</a>
-            <a class="nav-link active" href="{{ url_for('retrain') }}">Retrain Model</a>
-            <a class="nav-link" href="{{ url_for('questions') }}">Questions?</a>
+            <a class="nav-link" href="{{ url_for('predict') }}">Predictions</a>
+            <a class="nav-link" href="{{ url_for('retrain') }}">Retrain Model</a>
+            <a class="nav-link active" href="{{ url_for('questions') }}">Questions?</a>
           </nav>
         </div>
       </header>
 
       <main role="main" class="inner cover">
-        <h1 class="cover-heading">Retrained Model Results</h1>
-        <p class="lead"><b>Classifier Name:</b> {{ name }}</p>
-        <p class="lead"><b>ROC AUC Score:</b> {{ score }}</p>
-        <p class="lead"><b>Optimal Parameters</b></p>
-        <table class="center">
-            <thead>
-                <th>Hyper Parameter</th>
-                <th>Value</th>
-              </thead>
-              <tbody>
-                <!-- Here is where the data passed into the template gets inserted -->
-                {% for key, value in params.items() %}
-                    <tr>
-                        <td>{{ key }}</td>
-                        <td>{{ value }}</td>
-                    </tr>
-                {% endfor %}
-          </tbody>
-        </table>
-
+        <h1 class="cover-heading">Questions?</h1>
       </main>
 
       <footer class="mastfoot mt-auto">

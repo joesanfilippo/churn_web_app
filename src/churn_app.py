@@ -37,6 +37,8 @@ def predict():
                     ,city_name
                     ,days_since_signup
                     ,first_30_day_orders
+                    ,signup_to_order_hours
+                    ,DATE_PART('day', now() - last_order_time_utc) as days_since_last_order
                     ,churn_prediction
 
                 FROM churn_predictions
@@ -55,15 +57,26 @@ def predict():
                                                    ,'city_name'
                                                    ,'days_since_signup'
                                                    ,'first_30_day_orders'
+                                                   ,'signup_to_order_hours'
+                                                   ,'days_since_last_order'
                                                    ,'churn_prediction'])
         
-        users = [result[0] for result in results]
-        cities = [result[1] for result in results]
-        days = [result[2] for result in results]
-        orders = [result[3] for result in results]
-        churn_predictions = [round(result[4]*100, 1) for result in results]
+        users = results_df['user_id']
+        cities = results_df['city_name']
+        days = results_df['days_since_signup']
+        orders = results_df['first_30_day_orders']
+        signup_hrs = round(results_df['signup_to_order_hours'],1)
+        days_since_order = results_df['days_since_last_order'].astype(int)
+        churn_predictions = round(results_df['churn_prediction']*100,1)
         cursor.close()
-        return render_template('predictions.html', data=zip(users, cities, days, orders, churn_predictions)
+        return render_template('predictions.html'
+                              ,data=zip(users
+                                       ,cities
+                                       ,days
+                                       ,orders
+                                       ,signup_hrs
+                                       ,days_since_order
+                                       ,churn_predictions)
                               ,dataframe=results_df.to_csv(index=False))
     
     except (Exception, pg2.DatabaseError) as error:
@@ -91,6 +104,10 @@ def download():
     resp.headers["Content-Disposition"] = "attachment; filename={}".format(filename)
     resp.headers["Content-Type"] = "text/csv"
     return resp
+
+@app.route('/questions')
+def questions():
+    return render_template('questions.html')
 
 if __name__ == '__main__':
     

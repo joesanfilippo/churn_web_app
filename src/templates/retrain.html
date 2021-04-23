@@ -22,9 +22,11 @@
         <div class="inner">
           <h3 class="masthead-brand">Food Delivery Company</h3>
           <nav class="nav nav-masthead justify-content-center">
-            <a class="nav-link active" href="{{ url_for('index') }}">Home</a>
-            <a class="nav-link" href="{{ url_for('inputs') }}">Input Parameters</a>
+            <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+            <a class="nav-link" href="{{ url_for('inputs') }}">Inputs</a>
             <a class="nav-link" href="{{ url_for('predict') }}">Predictions</a>
+            <a class="nav-link active" href="{{ url_for('retrain') }}">Retrain Model</a>
+            <a class="nav-link" href="{{ url_for('questions') }}">Questions?</a>
           </nav>
         </div>
       </header>
