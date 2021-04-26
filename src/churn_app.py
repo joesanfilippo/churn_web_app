@@ -1,11 +1,11 @@
-from flask import Flask, request, render_template, make_response
+import time 
 import boto3
 import pickle
 import numpy as np
 import pandas as pd
-from train_test import retrain_model
 import psycopg2 as pg2
-import time 
+from train_test import retrain_model
+from flask import Flask, request, render_template, make_response
 
 app = Flask(__name__)
 
