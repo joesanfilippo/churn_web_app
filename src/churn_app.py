@@ -26,7 +26,7 @@ def predict():
             city_splits = city_ids.split(',')
             city_tup = tuple([int(x) for x in city_splits])
         else:
-            city_tup = tuple([int(x) for x in np.arange(1,100)])
+            city_tup = tuple([int(x) for x in np.arange(1,10000)])
 
         lookback_days = int(request.form['lookback_days'])
         threshold = float(request.form['threshold'])
